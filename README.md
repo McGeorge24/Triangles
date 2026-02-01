@@ -1,1 +1,2 @@
 # Triangles
+![[sposobnost.png]]
