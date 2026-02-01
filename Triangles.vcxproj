@@ -144,11 +144,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
-    <ClCompile Include="Triangles.cpp" />
+    <ClCompile Include="source\shaders.cpp" />
+    <ClCompile Include="source\Triangles.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\fragment.shader" />
     <None Include="resources\shaders\vertex.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\shaders.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,62 +3,22 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include "shaders.h"
 //#include <khrplatform.h>
 
-static void ParseShader(const std::string& file_path, std::string& parsed_string) 
-{   
-
-    std::ifstream file(file_path);
-
-    std::string line;
-    std::string parsed_file;
-    while (getline(file, line)) {
-        line.append("\n");
-        parsed_file.append(line);
-    }
-    std::cout << "Succesfully loaded 1 shader: " << file_path << std::endl;
-    parsed_string = parsed_file;
-}
-
-static unsigned int CompileShader(unsigned int type, const std::string& source)
+static void GLClearError()
 {
-    unsigned int id = glCreateShader(type);
-    const char* src = source.c_str();
-    glShaderSource(id, 1, &src, nullptr);
-    glCompileShader(id);
-    
-    int result;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-    if (result == GL_FALSE) 
-    {
-        int length;
-        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-        char* message = (char*)alloca(length * sizeof(char));
-        glGetShaderInfoLog(id, length, &length, message);
-        std::cout << "Failed to compile SHADER (jure) " << (type == GL_VERTEX_SHADER ? "vertex" : "fragment") << std::endl;
-        std::cout << message << std::endl;
-        glDeleteShader(id);
-        return 0;
-    }
-
-    return id;
+    while (glGetError() != GL_NO_ERROR);
 }
 
-static int CreateShader(const std::string& vertexShader, const std::string& fragmentShader) 
+static void GLCheckError()
 {
-    unsigned int program = glCreateProgram();
-    unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-    unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
-
-    glAttachShader(program, vs);
-    glAttachShader(program, fs);
-    glLinkProgram(program);
-    glValidateProgram(program);
-
-    glDeleteShader(vs);
-    glDeleteShader(fs);
-    return program;
+    while (GLenum error = glGetError()) {
+        std::cout << "[OpenGL: ERROR] " << error << std::endl;
+    }
 }
+
+
 
 int main(void)
 {
@@ -118,6 +78,13 @@ int main(void)
     unsigned int shader = CreateShader(vertexShader, fragmentShader);
     glUseProgram(shader);
 
+    int location = glGetUniformLocation(shader, "u_Color");
+    if (location == -1)
+        std::cout << "Failed to locate u_Color";
+    glUniform4f(location, 0.4f, 0.1f, 0.8f, 1.0f);
+    
+    float red = 0.11f, green = 0.34f, blue = 0.68f, red_change = 0.01f, blue_change = 0.01f, green_change = 0.01f;
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -125,7 +92,7 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-
+        GLCheckError();
 
 
         /* Swap front and back buffers */
@@ -133,6 +100,11 @@ int main(void)
 
         /* Poll for and process events */
         glfwPollEvents();
+
+        red += red_change; if ((red >= 0.9f) || (red <=0.1f)) red_change *= -1;
+        green += green_change; if ((green >= 0.9f) || (blue <= 0.1f)) green_change *= -1;
+        blue += blue_change; if ((blue >= 0.9f) || (blue <= 0.1f)) blue_change *= -1;
+        glUniform4f(location, red, green, blue, 1.0f);
     }
 
     glDeleteProgram(shader);
