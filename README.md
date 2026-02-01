@@ -1,2 +1,2 @@
 # Triangles
-![[sposobnost.png]]
+![Kaj lahko program naredi](sposobnost.png)
