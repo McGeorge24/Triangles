@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# kar sem jaz dodal ker mi gre na zivce
+*.sln
+*.vcxproj
+*.vcxproj.filters

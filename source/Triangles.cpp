@@ -38,6 +38,7 @@ int main(void)
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         return -1;
@@ -78,12 +79,12 @@ int main(void)
     unsigned int shader = CreateShader(vertexShader, fragmentShader);
     glUseProgram(shader);
 
-    int location = glGetUniformLocation(shader, "u_Color");
+    int location = glGetUniformLocation(shader, "u_Alpha");
     if (location == -1)
-        std::cout << "Failed to locate u_Color";
-    glUniform4f(location, 0.4f, 0.1f, 0.8f, 1.0f);
+        std::cout << "Failed to locate u_Alpha" << std::endl;
+    glUniform1f(location, 1.0f);
     
-    float red = 0.11f, green = 0.34f, blue = 0.68f, red_change = 0.01f, blue_change = 0.01f, green_change = 0.01f;
+    float alpha = 0.0f, alpha_change = 0.01;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -101,10 +102,11 @@ int main(void)
         /* Poll for and process events */
         glfwPollEvents();
 
-        red += red_change; if ((red >= 0.9f) || (red <=0.1f)) red_change *= -1;
-        green += green_change; if ((green >= 0.9f) || (blue <= 0.1f)) green_change *= -1;
-        blue += blue_change; if ((blue >= 0.9f) || (blue <= 0.1f)) blue_change *= -1;
-        glUniform4f(location, red, green, blue, 1.0f);
+        alpha += alpha_change; 
+        if ((alpha >= 1.0f) || (alpha <=0.0f)) 
+            alpha_change *= -1;
+        //std::cout << alpha << std::endl;
+        glUniform1f(location, alpha);
     }
 
     glDeleteProgram(shader);
